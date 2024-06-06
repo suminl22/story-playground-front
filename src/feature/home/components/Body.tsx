@@ -15,11 +15,11 @@ const Body: React.FC = () => {
       const incompletedData = await fetchIncompletedBooks();
       const completedData = await fetchCompletedBooks();
 
-      if (incompletedData !== '') {
+      if (incompletedData) {
         setIncompletedBooks(incompletedData);
       }
 
-      if (completedData !== '') {
+      if (completedData) {
         setCompletedBooks(completedData);
       }
     };
@@ -28,24 +28,30 @@ const Body: React.FC = () => {
   }, []);
 
   const renderBooks = () => {
-    if (activeTab === '작성중') {
-      return incompletedBooks.length > 0 ? (
-        incompletedBooks.map((book) => (
-          <Book key={book.id} state="edit" content={book} />
-        ))
-      ) : (
-        <EmptyMessage>텅~</EmptyMessage>
-      );
-    } else {
-      return completedBooks.length > 0 ? (
-        completedBooks.map((book) => (
-          <Book key={book.id} state="done" content={book} />
-        ))
-      ) : (
-        <EmptyMessage>텅~</EmptyMessage>
-      );
+    const booksToRender = activeTab === '작성중' ? incompletedBooks : completedBooks;
+    const rows = [];
+
+    for (let i = 0; i < booksToRender.length; i += 3) {
+      rows.push(booksToRender.slice(i, i + 3));
     }
+
+    return booksToRender.length > 0 ? (
+      <BooksContainer>
+        {rows.map((row, rowIndex) => (
+          <RowContainer key={rowIndex}>
+            {row.map((book) => (
+              <BookWrapper key={book.id}>
+                <Book state={activeTab === '작성중' ? 'edit' : 'done'} content={book} storyId={book.id} />
+              </BookWrapper>
+            ))}
+          </RowContainer>
+        ))}
+      </BooksContainer>
+    ) : (
+      <EmptyMessage>텅~</EmptyMessage>
+    );
   };
+
 
   return (
     <>
@@ -126,4 +132,31 @@ const EmptyMessage = styled.div`
     color: #888;
     font-size: 1.2rem;
     padding: 2rem;
+`;
+
+const BooksContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    align-items: center;
+`;
+
+const RowContainer = styled.div`
+    background-color: #E9ECEF;
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 6px;
+    box-sizing: border-box;
+`;
+
+const BookWrapper = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    padding: 10px;
 `;

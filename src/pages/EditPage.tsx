@@ -1,35 +1,37 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { fetchFirstSentence } from '../feature/chat/functions/fetchFirstSentence';
 import { fetchNextSentence } from '../feature/chat/functions/fetchNextSentence';
 import { useRecoilState } from 'recoil';
 import { chatState } from '../recoil/chat/chat';
 import ChatBubble from '../shared/components/ChatBubble';
 import { message } from '../shared/types/message';
+import { fetchPreviousSentence } from '../feature/edit/function/fetchPreviousSentence';
 
 const EditPage: React.FC = () => {
+  const { storyId } = useParams<{ storyId: string }>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isComposing, setIsComposing] = useState<boolean>(false);
   const [messages, setMessages] = useRecoilState<message[]>(chatState);
   const messagesRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef<boolean>(true);
   const navigate = useNavigate();
-  const [storyId, setStoryId] = useState<number>(0);
   const [triggerFetchNext, setTriggerFetchNext] = useState<boolean>(false);
-  const [isFirstSentenceFetched, setIsFirstSentenceFetched] = useState<boolean>(false);
+  const [isSentenceFetched, setIsSentenceFetched] = useState<boolean>(false);
   const [isFetchingNext, setIsFetchingNext] = useState<boolean>(false);
 
-  // Fetch the first sentence when the component mounts
+  // Fetch the previous sentences when the component mounts
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchFirstSentence();
+      const data = await fetchPreviousSentence(Number(storyId));
       if (data !== null) {
-        const systemMessage: message = { role: 'assistant', content: data.content };
-        setMessages((prevMessages) => [...prevMessages, systemMessage]);
+        const formattedMessages: message[] = data.map((content: string, index: number) => ({
+          role: index % 2 === 0 ? 'assistant' : 'user',
+          content,
+        }));
+        setMessages((prevMessages) => [...prevMessages, ...formattedMessages]);
         setIsLoading(false);
-        setStoryId(data.storyId);
-        setIsFirstSentenceFetched(true);
+        setIsSentenceFetched(true);
       }
     };
 
@@ -38,15 +40,15 @@ const EditPage: React.FC = () => {
     return () => {
       setMessages([]); // Clear messages on unmount
     };
-  }, []); // Removed setMessages from dependency array to ensure it runs only once
+  }, [storyId, setMessages]);
 
   // Fetch the next sentence after the user sends a message
   useEffect(() => {
     const fetchNext = async () => {
-      if (triggerFetchNext && !isComposing && isFirstSentenceFetched) {
+      if (triggerFetchNext && !isComposing && isSentenceFetched) {
         setTriggerFetchNext(false); // Ensure it only runs once
         setIsFetchingNext(true); // Start loading
-        const nextSentence = await fetchNextSentence(storyId, messages[messages.length - 1].content);
+        const nextSentence = await fetchNextSentence(Number(storyId), messages[messages.length - 1].content);
         if (nextSentence !== null) {
           const systemMessage: message = { role: 'assistant', content: nextSentence };
           setMessages((prevMessages) => [...prevMessages, systemMessage]);
@@ -57,7 +59,7 @@ const EditPage: React.FC = () => {
     };
 
     fetchNext();
-  }, [triggerFetchNext, isComposing, storyId, messages, isFirstSentenceFetched]);
+  }, [triggerFetchNext, isComposing, storyId, messages, isSentenceFetched, setMessages]);
 
   // Scroll to the bottom of the chat area whenever messages change
   useEffect(() => {

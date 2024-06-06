@@ -38,11 +38,6 @@ const BooksPage: React.FC = () => {
     return () => setBooks([]);
   }, [activeCategory, activeFilter]); // Fetch books whenever activeCategory or activeFilter changes
 
-  const handleCategoryClick = (category: string) => {
-    setActiveCategory(category);
-    setActiveFilter('좋아요순');
-  };
-
   // 책들을 3개씩 RowContainer에 배치
   const rows = [];
   for (let i = 0; i < books.length; i += 3) {
@@ -56,7 +51,10 @@ const BooksPage: React.FC = () => {
           <NavButton
             key={category}
             isActive={category === activeCategory}
-            onClick={() => handleCategoryClick(category)}
+            onClick={() => {
+              setActiveCategory(category);
+              setActiveFilter('좋아요순'); // Reset filter to 좋아요순 when category changes
+            }}
           >
             {category}
           </NavButton>
@@ -81,7 +79,7 @@ const BooksPage: React.FC = () => {
           <RowContainer key={rowIndex}>
             {row.map((book) => (
               <BookWrapper key={book.id}>
-                <Book state="done" content={book} />
+                <Book state="done" content={book} storyId={book.id} />
               </BookWrapper>
             ))}
           </RowContainer>
@@ -101,7 +99,7 @@ const PageContainer = styled.div`
 `;
 
 const NavBar = styled.nav`
-    background-color: #FCF06E;
+    background-color: #fcf06e;
     width: 100%;
     display: flex;
     justify-content: start;
@@ -157,7 +155,7 @@ const BooksContainer = styled.div`
 `;
 
 const RowContainer = styled.div`
-    background-color: #E9ECEF;
+    background-color: #e9ecef;
     display: flex;
     justify-content: space-evenly;
     width: 100%;

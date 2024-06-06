@@ -5,6 +5,7 @@ import SignUpPage from './pages/SignUpPage';
 import HomePage from './pages/HomePage';
 import ChatPage from './pages/ChatPage';
 import BooksPage from './pages/BooksPage';
+import EditPage from './pages/EditPage';
 
 const routes: RouteObject[] = [
     {
@@ -30,6 +31,10 @@ const routes: RouteObject[] = [
     {
         path: "/books",
         element: <BooksPage />
+    },
+    {
+        path: "/edit/:storyId",
+        element: <EditPage />
     }
 ];
 

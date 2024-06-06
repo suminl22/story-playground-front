@@ -1,7 +1,7 @@
 export interface IncompletedBook {
   id: number;
   title: string;
-  modifiedAt: string;
+  modifiedDate: string;
 }
 
 export interface CompletedBook {
@@ -9,6 +9,7 @@ export interface CompletedBook {
   title: string;
   createdAt: string;
   category: string;
+  // openness: 'public' | 'private';
 }
 
 export interface PublicBook {
