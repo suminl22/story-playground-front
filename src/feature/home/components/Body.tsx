@@ -1,59 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import Book from '../components/Book';
-import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { client } from '../../../shared/remotes/axios';
-
-interface Story {
-  id: number;
-  title: string;
-}
+import { fetchIncompletedBooks } from '../functions/fetchIncompletedBooks';
+import { fetchCompletedBooks } from '../functions/fetchCompletedBooks';
+import { IncompletedBook, CompletedBook } from '../../../shared/types/book';
+import Book from '../../../shared/components/Book';
 
 const Body: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<string>('작성중');
-  const [stories, setStories] = useState<Story[]>([]);
-  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<'작성중' | '작성완료'>('작성중');
+  const [incompletedBooks, setIncompletedBooks] = useState<IncompletedBook[]>([]);
+  const [completedBooks, setCompletedBooks] = useState<CompletedBook[]>([]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const fetchData = async () => {
+      const incompletedData = await fetchIncompletedBooks();
+      const completedData = await fetchCompletedBooks();
 
-    const fetchStories = async () => {
-      try {
-        const response = await client.get<Story[]>(`/story/user/incomplete`, {
-          headers: {
-            'Authorization': `${token}`
-          }
-        });
-        let data = response.data;
-        console.log(data);
-        data = data.map((story, index) => ({
-          ...story,
-          title: `story#${index + 1}`
-        }));
-        setStories(data);
-      } catch (error) {
-        console.error('Error fetching stories:', error);
+      if (incompletedData !== '') {
+        setIncompletedBooks(incompletedData);
+      }
+
+      if (completedData !== '') {
+        setCompletedBooks(completedData);
       }
     };
 
-    fetchStories();
+    fetchData();
   }, []);
 
-  const handleEditClick = (storyId: number) => {
-    localStorage.setItem('currentStoryId', storyId.toString());
-    navigate('/chat');
-  };
-
   const renderBooks = () => {
-    return stories.map((story) => (
-      <div className="col mb-5" key={story.id}>
-        <Book
-          action="edit"
-          title={story.title}
-          onEdit={() => handleEditClick(story.id)}
-        />
-      </div>
-    ));
+    if (activeTab === '작성중') {
+      return incompletedBooks.length > 0 ? (
+        incompletedBooks.map((book) => (
+          <Book key={book.id} state="edit" content={book} />
+        ))
+      ) : (
+        <EmptyMessage>텅~</EmptyMessage>
+      );
+    } else {
+      return completedBooks.length > 0 ? (
+        completedBooks.map((book) => (
+          <Book key={book.id} state="done" content={book} />
+        ))
+      ) : (
+        <EmptyMessage>텅~</EmptyMessage>
+      );
+    }
   };
 
   return (
@@ -92,33 +83,51 @@ const Body: React.FC = () => {
 export default Body;
 
 const Container = styled.div`
-  margin-top: 1rem;
-  padding-top: 20px;
+    margin-top: 1rem;
+    padding-top: 20px;
 `;
 
 const NavTabs = styled.ul`
-  width: 100%;
-  display: flex;
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #ddd;
 `;
 
 const NavItem = styled.li`
-  flex: 1;
+    list-style: none;
+    width: 45%;
+    text-align: center;
 `;
 
 const NavButton = styled.button<{ active: boolean }>`
-  width: 90%;
-  margin: 0 auto;
-  background-color: ${({ active }) => (active ? '#FCF06E' : 'white')};
-  color: black;
-  font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  &:focus {
-    outline: none;
-  }
+    width: 100%; // 부모의 100% 차지
+    background-color: ${({ active }) => (active ? '#FCF06E' : 'white')};
+    color: black;
+    font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
+    border: none;
+    border-bottom: ${({ active }) => (active ? '2px solid black' : 'none')};
+    cursor: pointer;
+    padding: 0.75rem 1.5rem;
+    transition: background-color 0.3s, border-bottom 0.3s;
+
+    &:focus {
+        outline: none;
+    }
+
+    &:hover {
+        background-color: #f0e68c;
+    }
 `;
 
 const Section = styled.section`
-  padding: 2rem 0;
+    padding: 2rem 0;
+`;
+
+const EmptyMessage = styled.div`
+    text-align: center;
+    color: #888;
+    font-size: 1.2rem;
+    padding: 2rem;
 `;

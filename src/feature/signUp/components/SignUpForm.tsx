@@ -33,7 +33,7 @@ const SignUpForm:React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <InputContainer>
+      <Container>
         <InputWrapper>
           <Input
             type="text"
@@ -50,17 +50,25 @@ const SignUpForm:React.FC = () => {
             placeholder="비밀번호"
           />
         </InputWrapper>
-      </InputContainer>
-      {error && <ErrorMessage>{error}</ErrorMessage>}
-      <Button type="submit">회원가입하기</Button>
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+        <Button type="submit">회원가입하기</Button>
+      </Container>
     </form>
   );
 }
 
 
-const InputContainer = styled.div`
+const Container = styled.div`
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    width: 300px;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 `;
 
 const InputWrapper = styled.div`

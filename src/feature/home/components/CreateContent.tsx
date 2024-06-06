@@ -3,20 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import Book from '../../../shared/components/Book';
 
-const Header: React.FC = () => {
+const CreateContent: React.FC = () => {
   const navigate = useNavigate();
 
   const handleButton = () => {
-    navigate("/books");
+    navigate("/chat");
   }
 
   return (
     <Container>
-      <Title>야기야 노올자</Title>
-      <SubTitle>
-        생성형 이야기 챗봇 &apos;` 야기 &apos;`과 함께
-        세상에 단 하나 뿐인 나만의 동화책을 만들어보세요!
-      </SubTitle>
+      <Column>
+        <SubTitle>
+          생성형 이야기 챗봇 &apos;야기&apos;과 함께
+        </SubTitle>
+        <SubTitle>
+          세상에 단 하나 뿐인 나만의 동화책을 만들어보세요!
+        </SubTitle>
+      </Column>
       <StartButton onClick={handleButton}>
         이야기 시작하기
       </StartButton>
@@ -24,29 +27,37 @@ const Header: React.FC = () => {
   );
 }
 
-export default Header;
+export default CreateContent;
 
 const Container = styled.div`
     padding: 20px 0 !important;
-    background-color: #FCF06E;
+    background-color: #E9ECEF;
     text-align: center;
     @media (min-width: 992px) {
         padding: 0 2rem;
     }
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
 `;
 
 const Title = styled.h1`
-    font-size: 2.5rem;
+    font-size: 3rem;
     font-weight: bolder;
     color: black;
 `;
 
-const SubTitle = styled.p`
-    font-size: 1rem;
-    color: darkgray;
+const SubTitle = styled.span`
+    font-size: 1.2rem;
 `
 
+const Column = styled.div`
+    display: flex;
+    flex-direction: column;
+`
 const StartButton = styled.button`
+    height: 50px;
     background-color: #FFD700;
     border: none;
     color: black;

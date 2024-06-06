@@ -1,13 +1,16 @@
 import React from 'react';
 import Body from '../feature/home/components/Body';
 import NavBar from '../feature/home/components/NavBar';
-import Header from '../feature/home/components/Header';
+import RankingContent from '../feature/home/components/RankingContent';
+import CreateContent from '../feature/home/components/CreateContent';
 
 const HomePage: React.FC = () => {
   return (
     <>
       <NavBar />
-      <Header />
+      {/*나중에 slider로 ranking이랑 created을 content로 보여주기*/}
+      <CreateContent />
+      <RankingContent />
       <Body />
     </>
   );

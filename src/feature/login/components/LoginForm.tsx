@@ -53,14 +53,16 @@ const LoginForm:React.FC = ()=>{
 }
 
 const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: fit-content;
     background-color: white;
     padding: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    width: 300px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
 `
 
 const Input = styled.input`
@@ -69,6 +71,7 @@ const Input = styled.input`
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 0 10px;
+    margin-bottom: 20px;
 `;
 
 const Button = styled.button`
