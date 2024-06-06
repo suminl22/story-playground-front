@@ -1,10 +1,15 @@
 import { client } from '../../../shared/remotes/axios';
 
-export const fetchFirstSentence = async (): Promise<string|null> => {
+export const fetchFirstSentence = async () => {
   try {
     const response = await client.post('/make/');
-    console.log(response.data);
-    return response.data["content"];
+    const data = {
+      "content": response.data["content"],
+      "storyId": response.data["storyId"],
+    };
+
+    console.log(data);
+    return data;
   } catch (error) {
     console.error('Error fetching First Sentence!!!' , error);
     return null;

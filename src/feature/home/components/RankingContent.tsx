@@ -13,18 +13,27 @@ const RankingContent: React.FC = () => {
       title: '첫 번째 책',
       createdAt: '2024-06-06',
       author: '민수',
+      category: '효도',
+      likeNum: 123,
+      dislikeNum: 2,
     },
     {
       id: 1,
       title: '두 번째 책',
       createdAt: '2024-06-05',
       author: '서노',
+      category: '우애',
+      likeNum: 11,
+      dislikeNum: 4,
     },
     {
       id: 2,
       title: '세 번째 책',
       createdAt: '2024-05-23',
       author: '재훈',
+      category: '사랑',
+      likeNum: 1,
+      dislikeNum: 5,
     },
   ]
 
@@ -69,10 +78,13 @@ const BookList = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
+    margin-bottom: 20px;
 `;
 
 const Button = styled.button`
     background-color: #FFD700;
+    width: 300px;
+    
     border: none;
     color: black;
     font-weight: bold;

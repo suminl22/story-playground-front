@@ -1,24 +1,52 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import Book from '../shared/components/Book';
 import { PublicBook } from '../shared/types/book';
+import { fetchCategory } from '../feature/books/functions/fetchCategory';
+import { fetchBooks } from '../feature/books/functions/fetchBooks';
 
 const BooksPage: React.FC = () => {
-  const categories: string[] = ['전체', '사랑', '효도', '우정'];
+  const [categories, setCategories] = useState<string[]>(['all']);
   const [activeCategory, setActiveCategory] = useState<string>(categories[0]);
   const [activeFilter, setActiveFilter] = useState<'좋아요순' | '최신순'>('좋아요순');
+  const [books, setBooks] = useState<PublicBook[]>([]);
 
-  const dummyBooks: PublicBook[] = Array.from({ length: 11 }, (_, index) => ({
-    id: index,
-    title: `Dummy Book ${index + 1}`,
-    createdAt: '2024-06-06',
-    author: `Author ${index + 1}`,
-  }));
+  useEffect(() => {
+    const getCategories = async () => {
+      const datas: string[] = await fetchCategory();
+      setCategories((prevCategories) => [...prevCategories, ...datas]);
+    };
+    getCategories();
+
+    return () => setCategories(['all']);
+  }, []);
+
+  useEffect(() => {
+    let filterName = '';
+    if (activeFilter === '좋아요순') {
+      filterName = 'like';
+    } else {
+      filterName = 'recent';
+    }
+
+    const getBooks = async () => {
+      const datas: PublicBook[] = await fetchBooks(activeCategory, filterName);
+      setBooks(datas);
+    };
+    getBooks();
+
+    return () => setBooks([]);
+  }, [activeCategory, activeFilter]); // Fetch books whenever activeCategory or activeFilter changes
+
+  const handleCategoryClick = (category: string) => {
+    setActiveCategory(category);
+    setActiveFilter('좋아요순');
+  };
 
   // 책들을 3개씩 RowContainer에 배치
   const rows = [];
-  for (let i = 0; i < dummyBooks.length; i += 3) {
-    rows.push(dummyBooks.slice(i, i + 3));
+  for (let i = 0; i < books.length; i += 3) {
+    rows.push(books.slice(i, i + 3));
   }
 
   return (
@@ -28,7 +56,7 @@ const BooksPage: React.FC = () => {
           <NavButton
             key={category}
             isActive={category === activeCategory}
-            onClick={() => setActiveCategory(category)}
+            onClick={() => handleCategoryClick(category)}
           >
             {category}
           </NavButton>
@@ -139,11 +167,10 @@ const RowContainer = styled.div`
     box-sizing: border-box;
 `;
 
-
 const BookWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
-  padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    padding: 10px;
 `;

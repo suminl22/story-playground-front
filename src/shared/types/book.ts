@@ -8,6 +8,7 @@ export interface CompletedBook {
   id: number;
   title: string;
   createdAt: string;
+  category: string;
 }
 
 export interface PublicBook {
@@ -15,4 +16,7 @@ export interface PublicBook {
   title: string;
   createdAt: string;
   author: string;
+  likeNum: number;
+  dislikeNum: number;
+  category: string;
 }

@@ -11,12 +11,10 @@ const container = document.getElementById('root');
 const root = createRoot(container!); // Ensure that the container is not null with the non-null assertion operator
 
 root.render(
-  <React.StrictMode>
     <RecoilRoot>
       <ThemeProvider theme={theme}>
         <GlobalStyles />
         <RouterProvider router={router} />
       </ThemeProvider>
     </RecoilRoot>
-  </React.StrictMode>
 );

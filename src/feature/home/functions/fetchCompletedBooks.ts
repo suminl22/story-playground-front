@@ -5,7 +5,6 @@ export const fetchCompletedBooks = async ()=>{
   try {
     const response = await client.get<CompletedBook[]>(`/story/user/incomplete`);
     let data = response.data;
-    console.log(data);
 
     data = data.map((story, index) => ({
       ...story,

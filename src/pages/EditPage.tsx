@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { fetchFirstSentence } from '../feature/chat/components/fetchFirstSentence';
+import { fetchFirstSentence } from '../feature/chat/functions/fetchFirstSentence';
+import { fetchNextSentence } from '../feature/chat/functions/fetchNextSentence';
 import { useRecoilState } from 'recoil';
 import { chatState } from '../recoil/chat/chat';
 import ChatBubble from '../shared/components/ChatBubble';
 import { message } from '../shared/types/message';
-import { fetchPreviousSentences } from '../feature/chat/components/fetchPreviousSentences';
 
 const EditPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -15,26 +15,51 @@ const EditPage: React.FC = () => {
   const messagesRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef<boolean>(true);
   const navigate = useNavigate();
+  const [storyId, setStoryId] = useState<number>(0);
+  const [triggerFetchNext, setTriggerFetchNext] = useState<boolean>(false);
+  const [isFirstSentenceFetched, setIsFirstSentenceFetched] = useState<boolean>(false);
+  const [isFetchingNext, setIsFetchingNext] = useState<boolean>(false);
 
+  // Fetch the first sentence when the component mounts
   useEffect(() => {
     const fetchData = async () => {
-      const previousSentences = await fetchPreviousSentences();
-
-      if (previousSentences !== null) {
-        const formattedMessages: message[] = previousSentences.map((sentence, index) => ({
-          role: index % 2 === 0 ? 'assistant' : 'user',
-          content: sentence
-        }));
-
-        setMessages((prevMessages) => [...prevMessages, ...formattedMessages]);
+      const data = await fetchFirstSentence();
+      if (data !== null) {
+        const systemMessage: message = { role: 'assistant', content: data.content };
+        setMessages((prevMessages) => [...prevMessages, systemMessage]);
         setIsLoading(false);
+        setStoryId(data.storyId);
+        setIsFirstSentenceFetched(true);
       }
     };
 
     fetchData();
-  }, [setMessages]);
 
+    return () => {
+      setMessages([]); // Clear messages on unmount
+    };
+  }, []); // Removed setMessages from dependency array to ensure it runs only once
 
+  // Fetch the next sentence after the user sends a message
+  useEffect(() => {
+    const fetchNext = async () => {
+      if (triggerFetchNext && !isComposing && isFirstSentenceFetched) {
+        setTriggerFetchNext(false); // Ensure it only runs once
+        setIsFetchingNext(true); // Start loading
+        const nextSentence = await fetchNextSentence(storyId, messages[messages.length - 1].content);
+        if (nextSentence !== null) {
+          const systemMessage: message = { role: 'assistant', content: nextSentence };
+          setMessages((prevMessages) => [...prevMessages, systemMessage]);
+          setIsLoading(false);
+          setIsFetchingNext(false); // Stop loading
+        }
+      }
+    };
+
+    fetchNext();
+  }, [triggerFetchNext, isComposing, storyId, messages, isFirstSentenceFetched]);
+
+  // Scroll to the bottom of the chat area whenever messages change
   useEffect(() => {
     const scrollToBottom = () => {
       if (messagesRef.current && isAtBottomRef.current) {
@@ -45,6 +70,7 @@ const EditPage: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Handle scrolling in the chat area
   useEffect(() => {
     const handleScroll = () => {
       if (messagesRef.current) {
@@ -63,14 +89,17 @@ const EditPage: React.FC = () => {
     }
   }, []);
 
+  // Handle composition start for IME
   const handleCompositionStart = () => {
     setIsComposing(true);
   };
 
+  // Handle composition end for IME
   const handleCompositionEnd = () => {
     setIsComposing(false);
   };
 
+  // Handle key press in the input area
   const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey && !isComposing) {
       event.preventDefault();
@@ -78,17 +107,19 @@ const EditPage: React.FC = () => {
     }
   };
 
+  // Send message and trigger fetch for the next sentence
   const sendMessage = () => {
     const input = document.getElementById('message-input') as HTMLTextAreaElement;
     const messageText = input.value.trim();
     if (messageText !== '') {
       const userMessage: message = { role: 'user', content: messageText };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
-
       input.value = '';
+      setTriggerFetchNext(true);
     }
   };
 
+  // Navigate back to home
   const handleClick = () => {
     navigate('/home');
   };
@@ -104,6 +135,7 @@ const EditPage: React.FC = () => {
             <ChatBubble key={index} message={message.content} role={message.role} />
           ))}
           {isLoading && <ChatBubble key="loading" message="문장을 만들고 있어용..." role="assistant" />}
+          {isFetchingNext && <ChatBubble key="fetching" message="문장을 만들고 있어용..." role="assistant" />}
         </ChatArea>
         <InputArea>
           <MessageInput
@@ -162,6 +194,8 @@ const ChatArea = styled.div`
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
 `;
 
 const InputArea = styled.div`

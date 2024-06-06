@@ -25,7 +25,16 @@ const Book: React.FC<BookProps> = ({ state, content }) => {
         <Date>{(content as IncompletedBook).modifiedAt}</Date>
       )}
       {Object.prototype.hasOwnProperty.call(content, 'author') && (
-        <Author>{(content as PublicBook).author}</Author>
+        <Author>작가 : {(content as PublicBook).author}</Author>
+      )}
+      {Object.prototype.hasOwnProperty.call(content, 'category') && (
+        <Category>주제 : {(content as PublicBook).category}</Category>
+      )}
+      {Object.prototype.hasOwnProperty.call(content, 'likeNum') && (
+        <Row>
+          <Number>좋아요 : {(content as PublicBook).likeNum}개</Number>
+          <Number>싫어요 : {(content as PublicBook).dislikeNum}개</Number>
+        </Row>
       )}
     </Container>
   );
@@ -76,4 +85,21 @@ const Author = styled.span`
     color: #333;
 `;
 
+const Category = styled.span`
+    margin-top: 5px;
+    font-size: 0.9rem;
+    color: #333;
+`;
+
+const Row = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap:20px;
+`
+
+const Number = styled.span`
+    margin-top: 5px;
+    font-size: 0.9rem;
+    color: #333;
+`
 export default Book;
