@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ChatBubble from '../shared/components/ChatBubble';
-import { Link } from 'react-router-dom';
-import { client } from '../shared/remotes/axios';
-import SystemPrompting1 from '../feature/chat/components/systemPrompting1';
-import SystemPrompting2 from '../feature/chat/components/systemPrompting2';
+import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
+import { fetchFirstSentence } from '../feature/chat/components/fetchFirstSentence';
+import { useRecoilState } from 'recoil';
+import { chatState } from '../recoil/chat/chat';
 
 interface Message {
   role: string;
@@ -14,26 +14,23 @@ interface Message {
 const ChatPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isComposing, setIsComposing] = useState<boolean>(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useRecoilState<Message[]>(chatState);
   const messagesRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef<boolean>(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchFirstSentence = async () => {
-      try {
-        const firstSentence = await getFirstSentence();
-        if (firstSentence) {
-          const systemMessage = { role: 'assistant', content: firstSentence };
-          setMessages((prevMessages) => [...prevMessages, systemMessage]);
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error('Error fetching first sentence:', error);
+    const fetchData = async () => {
+      const firstSentence = await fetchFirstSentence();
+      if (firstSentence !== null) {
+        const systemMessage: Message = { role: 'assistant', content: firstSentence };
+        setMessages((prevMessages) => [...prevMessages, systemMessage]);
+        setIsLoading(false);
       }
     };
 
-    fetchFirstSentence();
-  }, []);
+    fetchData();
+  }, [setMessages]);
 
   useEffect(() => {
     const scrollToBottom = () => {
@@ -46,6 +43,13 @@ const ChatPage: React.FC = () => {
   }, [messages]);
 
   useEffect(() => {
+    const handleScroll = () => {
+      if (messagesRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = messagesRef.current;
+        isAtBottomRef.current = scrollTop + clientHeight >= scrollHeight;
+      }
+    };
+
     if (messagesRef.current) {
       messagesRef.current.addEventListener('scroll', handleScroll);
       return () => {
@@ -55,13 +59,6 @@ const ChatPage: React.FC = () => {
       };
     }
   }, []);
-  const handleScroll = () => {
-    if (messagesRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = messagesRef.current;
-      isAtBottomRef.current = scrollTop + clientHeight >= scrollHeight;
-    }
-  };
-
 
   const handleCompositionStart = () => {
     setIsComposing(true);
@@ -82,97 +79,21 @@ const ChatPage: React.FC = () => {
     const input = document.getElementById('message-input') as HTMLTextAreaElement;
     const messageText = input.value.trim();
     if (messageText !== '') {
-      const userMessage = { content: messageText, role: 'user' };
+      const userMessage: Message = { role: 'user', content: messageText };
       setMessages((prevMessages) => [...prevMessages, userMessage]);
-
-      const allMessages = [...messages, userMessage].map((message) => ({
-        content: message.content,
-        role: message.role,
-      }));
-
-      fetchGptAPITokenAndCommunicate(messageText, allMessages);
 
       input.value = '';
     }
   };
 
-  const getFirstSentence = async (): Promise<string | null> => {
-    try {
-      const tokenResponse = await client.get('/chat-gpt/token');
-      const gptAPIToken = tokenResponse.data;
-
-      const requestData = {
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content: SystemPrompting1,
-          },
-        ],
-        temperature: 1,
-        max_tokens: 4096,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
-      };
-
-      const response = await client.post('https://api.openai.com/v1/chat/completions', requestData, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${gptAPIToken}`,
-        },
-      });
-
-      return response.data.choices[0].message.content;
-    } catch (error) {
-      console.error('Error fetching GPT API token or communicating with GPT API:', error);
-      return null;
-    }
-  };
-
-  const fetchGptAPITokenAndCommunicate = async (inputText: string, allMessages: Message[]) => {
-    try {
-      setIsLoading(true);
-
-      allMessages.unshift({
-        role: 'system',
-        content: SystemPrompting2,
-      });
-
-      const tokenResponse = await client.get('/chat-gpt/token', { params: { inputText } });
-      const gptAPIToken = tokenResponse.data;
-
-      const requestData = {
-        model: 'gpt-3.5-turbo',
-        messages: allMessages,
-        temperature: 1,
-        max_tokens: 4096,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
-      };
-
-      const response = await client.post('https://api.openai.com/v1/chat/completions', requestData, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${gptAPIToken}`,
-        },
-      });
-
-      const completedMessage = response.data.choices[0].message.content;
-      const computerMessage = { content: completedMessage, role: 'assistant' };
-      setMessages((prevMessages) => [...prevMessages, computerMessage]);
-    } catch (error) {
-      console.error('Error fetching GPT API token or communicating with GPT API:', error);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleClick = () => {
+    navigate('/home');
   };
 
   return (
     <Container>
       <Sidebar>
-        <StyledLink to="/home">돌아가기</StyledLink>
+        <HomeTextButton onClick={handleClick}>돌아가기</HomeTextButton>
       </Sidebar>
       <MainContent>
         <ChatArea ref={messagesRef}>
@@ -223,11 +144,11 @@ const MainContent = styled.div`
     padding: 20px;
 `;
 
-const StyledLink = styled(Link)`
-    text-decoration: none;
+const HomeTextButton = styled.span`
     color: black;
     font-weight: bold;
     font-size: 16px;
+    cursor: pointer;
 `;
 
 const ChatArea = styled.div`
@@ -266,15 +187,15 @@ const MessageInput = styled.textarea`
 `;
 
 const SendButton = styled.button`
-  padding: 10px 20px;
-  background-color: #ffd700;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 16px;
+    padding: 10px 20px;
+    background-color: #ffd700;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
 
-  &:hover {
-    background-color: #ffcc00;
-  }
+    &:hover {
+        background-color: #ffcc00;
+    }
 `;

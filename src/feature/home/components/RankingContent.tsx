@@ -2,12 +2,12 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import Book from '../../../shared/components/Book';
-import { CompletedBook } from '../../../shared/types/book';
+import { PublicBook } from '../../../shared/types/book';
 
 const RankingContent: React.FC = () => {
   const navigate = useNavigate();
 
-  const dummyBooks: CompletedBook[] = [
+  const dummyBooks: PublicBook[] = [
     {
       id: 0,
       title: '첫 번째 책',

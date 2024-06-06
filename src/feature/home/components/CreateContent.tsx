@@ -42,12 +42,6 @@ const Container = styled.div`
     align-items: center;
 `;
 
-const Title = styled.h1`
-    font-size: 3rem;
-    font-weight: bolder;
-    color: black;
-`;
-
 const SubTitle = styled.span`
     font-size: 1.2rem;
 `
