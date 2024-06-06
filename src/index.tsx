@@ -1,20 +1,22 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
-import router from "./router";
-import theme from "./shared/styles/theme";
 import { ThemeProvider } from 'styled-components';
-import GlobalStyles from "./shared/styles/GlobalStyles";
-import {RecoilRoot} from "recoil";
+import { RecoilRoot } from 'recoil';
+import GlobalStyles from './shared/styles/GlobalStyles'; // Ensure the path is correct
+import theme from './shared/styles/theme'; // Ensure the path is correct
+import router from './router'; // Ensure the path is correct
 
-ReactDOM.render(
-    <React.StrictMode>
-        <RecoilRoot>
-            <GlobalStyles />
-            <ThemeProvider theme={theme}>
-                <RouterProvider router={router} />
-            </ThemeProvider>
-        </RecoilRoot>
-    </React.StrictMode>,
-    document.getElementById('root')
+const container = document.getElementById('root');
+const root = createRoot(container!); // Ensure that the container is not null with the non-null assertion operator
+
+root.render(
+  <React.StrictMode>
+    <RecoilRoot>
+      <ThemeProvider theme={theme}>
+        <GlobalStyles />
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </RecoilRoot>
+  </React.StrictMode>
 );
