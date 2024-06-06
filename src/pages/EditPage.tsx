@@ -6,8 +6,9 @@ import { useRecoilState } from 'recoil';
 import { chatState } from '../recoil/chat/chat';
 import ChatBubble from '../shared/components/ChatBubble';
 import { message } from '../shared/types/message';
+import { fetchPreviousSentences } from '../feature/chat/components/fetchPreviousSentences';
 
-const ChatPage: React.FC = () => {
+const EditPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isComposing, setIsComposing] = useState<boolean>(false);
   const [messages, setMessages] = useRecoilState<message[]>(chatState);
@@ -15,19 +16,24 @@ const ChatPage: React.FC = () => {
   const isAtBottomRef = useRef<boolean>(true);
   const navigate = useNavigate();
 
-
   useEffect(() => {
     const fetchData = async () => {
-      const firstSentence = await fetchFirstSentence();
-      if (firstSentence !== null) {
-        const systemMessage: message = { role: 'assistant', content: firstSentence };
-        setMessages((prevMessages) => [...prevMessages, systemMessage]);
+      const previousSentences = await fetchPreviousSentences();
+
+      if (previousSentences !== null) {
+        const formattedMessages: message[] = previousSentences.map((sentence, index) => ({
+          role: index % 2 === 0 ? 'assistant' : 'user',
+          content: sentence
+        }));
+
+        setMessages((prevMessages) => [...prevMessages, ...formattedMessages]);
         setIsLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [setMessages]);
+
 
   useEffect(() => {
     const scrollToBottom = () => {
@@ -114,7 +120,7 @@ const ChatPage: React.FC = () => {
   );
 };
 
-export default ChatPage;
+export default EditPage;
 
 const Container = styled.div`
     background-color: #eff3f7;

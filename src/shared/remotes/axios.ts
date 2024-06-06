@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { SERVER_URL } from './constatns';
+import { SERVER_URL } from './constants';
 
 const defaultConfig: AxiosRequestConfig = {
     baseURL: SERVER_URL,
@@ -11,7 +11,7 @@ client.interceptors.request.use(
   (config) => {
       const token = localStorage.getItem('token'); // 로컬스토리지에서 토큰 가져오기
       if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+          config.headers.Authorization = `${token}`;
       }
       return config;
   },
