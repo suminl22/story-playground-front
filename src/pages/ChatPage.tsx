@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import ChatBubble from '../feature/chat/components/ChatBubble';
+import ChatBubble from '../shared/components/ChatBubble';
 import { Link } from 'react-router-dom';
 import { client } from '../shared/remotes/axios';
 import SystemPrompting1 from '../feature/chat/components/systemPrompting1';
@@ -12,9 +12,9 @@ interface Message {
 }
 
 const ChatPage: React.FC = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isComposing, setIsComposing] = useState<boolean>(false);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const messagesRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef<boolean>(true);
 
