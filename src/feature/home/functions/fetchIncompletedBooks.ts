@@ -1,33 +1,34 @@
 import { client } from '../../../shared/remotes/axios';
-import { IncompletedBook } from '../../../shared/types/book';
+import { CompletedBook, IncompletedBook } from '../../../shared/types/book';
+import { formatDate } from '../../../shared/functions/formatDate';
 
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1; // getMonth() returns month from 0 to 11
-  const day = date.getDate();
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  return `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분`;
-};
+interface BookData {
+  storyId: number;
+  title: string;
+  modifiedDate: string;
+  topic: string;
+  likeNum: number;
+  dislikeNum: number;
+}
 
-export const fetchIncompletedBooks = async ()=>{
+
+export const fetchIncompletedBooks = async (): Promise<IncompletedBook[]>=>{
   try {
-    const response = await client.get<IncompletedBook[]>(`/main/list/incomplete`);
-    let data = response.data;
-    console.log(data);
+    const response = await client.get<BookData[]>(`/main/list/incomplete`);
+    const data= response.data;
 
-    data = data.map((story, index) => ({
+    const formattedData: IncompletedBook[] = data.map((story, index) => ({
       ...story,
-      id: story.id,
+      id: story.storyId,
       title: '미완성',
+      category: story.topic,
       modifiedDate: formatDate(story.modifiedDate),
     }));
 
-    return data;
+    return formattedData;
   } catch (error) {
     console.error('Error fetching stories:', error);
-    return '';
+    return [];
   }
 
 }

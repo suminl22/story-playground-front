@@ -15,10 +15,9 @@ const Book: React.FC<BookProps> = ({ state, content, storyId }) => {
 
   const handleClick = () => {
     if (state === 'edit') {
-      console.log('책 클릭하자마자');
-      console.log(storyId);
-      console.log(typeof(storyId));
       navigate(`/edit/${storyId}`);
+    } else if(state === 'done'){
+      navigate(`/read/${storyId}`);
     }
   };
 

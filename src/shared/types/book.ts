@@ -21,3 +21,30 @@ export interface PublicBook {
   dislikeNum: number;
   category: string;
 }
+
+export interface BookDetail {
+  id: number;
+  title: string;
+  author: string;
+  category: string;
+  visibility: string;
+  likeNum: number;
+  dislikeNum: number;
+  isMine: boolean;
+  isEvaluated: boolean;
+  modifiedDate: string;
+}
+
+export interface GetBookData {
+  storyId: number;
+  title: string;
+  username: string;
+  topic: string;
+  isCompleted: boolean;
+  modifiedDate: string;
+  visibility: "PUBLIC" | "PRIVATE";
+  likeNum: number;
+  dislikeNum: number;
+  isMine: boolean;
+  isEvaluated: boolean;
+}

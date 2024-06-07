@@ -6,9 +6,13 @@ import { useRecoilState } from 'recoil';
 import { chatState } from '../recoil/chat/chat';
 import ChatBubble from '../shared/components/ChatBubble';
 import { message } from '../shared/types/message';
-import { fetchPreviousSentence } from '../feature/edit/functions/fetchPreviousSentence';
+import { fetchAllSentence } from '../feature/read/functions/fetchAllSentence';
+import { fetchBookData } from '../feature/read/functions/fetchBookData';
+import { BookDetail } from '../shared/types/book';
+import { getJoayo } from '../feature/read/functions/getJoayo';
+import { postVisibility } from '../feature/read/functions/postVisibility';
 
-const EditPage: React.FC = () => {
+const ReadPage: React.FC = () => {
   const { storyId } = useParams<{ storyId: string }>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isComposing, setIsComposing] = useState<boolean>(false);
@@ -19,11 +23,21 @@ const EditPage: React.FC = () => {
   const [triggerFetchNext, setTriggerFetchNext] = useState<boolean>(false);
   const [isSentenceFetched, setIsSentenceFetched] = useState<boolean>(false);
   const [isFetchingNext, setIsFetchingNext] = useState<boolean>(false);
+  const [visibility, setVisibility] = useState<string>('PUBLIC');
+  const [bookData, setBookData] = useState<BookDetail>();
+  const [likeStatus, setLikeStatus] = useState<string>('');
 
-  // Fetch the previous sentences when the component mounts
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchPreviousSentence(Number(storyId));
+      const data = await fetchBookData(Number(storyId));
+      if (data != null) {
+        setBookData(data);
+        setVisibility(data.visibility);
+      }
+    };
+
+    const fetchSentences = async () => {
+      const data = await fetchAllSentence(Number(storyId));
       if (data !== null) {
         const formattedMessages: message[] = data.map((content: string, index: number) => ({
           role: index % 2 === 0 ? 'assistant' : 'user',
@@ -35,19 +49,19 @@ const EditPage: React.FC = () => {
       }
     };
 
+    fetchSentences();
     fetchData();
 
     return () => {
-      setMessages([]); // Clear messages on unmount
+      setMessages([]);
     };
   }, [storyId, setMessages]);
 
-  // Fetch the next sentence after the user sends a message
   useEffect(() => {
     const fetchNext = async () => {
       if (triggerFetchNext && !isComposing && isSentenceFetched) {
-        setTriggerFetchNext(false); // Ensure it only runs once
-        setIsFetchingNext(true); // Start loading
+        setTriggerFetchNext(false);
+        setIsFetchingNext(true);
         const nextSentence = await fetchNextSentence(Number(storyId), messages[messages.length - 1].content);
         if (nextSentence !== null) {
           const systemMessage: message = { role: 'assistant', content: nextSentence };
@@ -95,51 +109,76 @@ const EditPage: React.FC = () => {
     }
   };
 
-  // Handle composition start for IME
-  const handleCompositionStart = () => {
-    setIsComposing(true);
-  };
-
-  // Handle composition end for IME
-  const handleCompositionEnd = () => {
-    setIsComposing(false);
-  };
-
-  // Handle key press in the input area
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === 'Enter' && !event.shiftKey && !isComposing) {
-      event.preventDefault();
-      sendMessage();
-    }
-  };
-
-  // Send message and trigger fetch for the next sentence
-  const sendMessage = () => {
-    const input = document.getElementById('message-input') as HTMLTextAreaElement;
-    const messageText = input.value.trim();
-    if (messageText !== '') {
-      const userMessage: message = { role: 'user', content: messageText };
-      setMessages((prevMessages) => {
-        const updatedMessages = [...prevMessages, userMessage];
-        scrollToBottom(); // Scroll to bottom when messages update
-        return updatedMessages;
-      });
-      input.value = '';
-      setTriggerFetchNext(true);
-    }
-  };
-
   // Navigate back to home
   const handleClick = () => {
     navigate('/home');
+  };
+
+  // Handle like and dislike buttons
+  const handleLikeClick = () => {
+    if (likeStatus !== 'like') {
+      setLikeStatus('like');
+    } else {
+      setLikeStatus('');
+    }
+  };
+
+  const handleDislikeClick = () => {
+    if (likeStatus !== 'dislike') {
+      setLikeStatus('dislike');
+    } else {
+      setLikeStatus('');
+    }
+  };
+
+  useEffect(() => {
+    if (likeStatus && bookData && !bookData.isEvaluated) {
+      getJoayo(Number(storyId), likeStatus);
+      setBookData((prevData) => (prevData ? { ...prevData, isEvaluated: true } : undefined));
+      setLikeStatus('');
+    }
+  }, [likeStatus, bookData, storyId]);
+
+  // Handle visibility toggle buttons
+  const handleVisibilityChange = (newVisibility: string) => {
+    if (newVisibility !== visibility) {
+      setVisibility(newVisibility);
+      if (bookData) {
+        postVisibility(Number(storyId), newVisibility);
+      }
+    }
   };
 
   return (
     <Container>
       <Sidebar>
         <HomeTextButton onClick={handleClick}>돌아가기</HomeTextButton>
+        {bookData?.isMine && (
+          <>
+            <ToggleButton
+              onClick={() => handleVisibilityChange('PUBLIC')}
+              active={visibility === 'PUBLIC'}
+            >
+              PUBLIC
+            </ToggleButton>
+            <ToggleButton
+              onClick={() => handleVisibilityChange('PRIVATE')}
+              active={visibility === 'PRIVATE'}
+            >
+              PRIVATE
+            </ToggleButton>
+          </>
+        )}
       </Sidebar>
       <MainContent>
+        <HeaderContainer>
+          <Title>{bookData?.title}</Title>
+          <>
+            <SubText>작가 : {bookData?.author}</SubText>
+            <SubText>작성날짜 : {bookData?.modifiedDate}</SubText>
+            <SubText>교훈 : {bookData?.category}</SubText>
+          </>
+        </HeaderContainer>
         <ChatArea ref={messagesRef}>
           {messages.map((message, index) => (
             <ChatBubble key={index} message={message.content} role={message.role} />
@@ -147,22 +186,22 @@ const EditPage: React.FC = () => {
           {isLoading && <ChatBubble key="loading" message="문장을 만들고 있어용..." role="assistant" />}
           {isFetchingNext && <ChatBubble key="fetching" message="문장을 만들고 있어용..." role="assistant" />}
         </ChatArea>
-        <InputArea>
-          <MessageInput
-            id="message-input"
-            placeholder="다음 이야기를 입력해줘"
-            onKeyDown={handleKeyPress}
-            onCompositionStart={handleCompositionStart}
-            onCompositionEnd={handleCompositionEnd}
-          />
-          <SendButton onClick={sendMessage}>입력</SendButton>
-        </InputArea>
+        <ButtonArea>
+          {bookData?.isEvaluated ? (
+            <EvaluatedText>이미 평가되었습니다!</EvaluatedText>
+          ) : (
+            <>
+              <ActionButton onClick={handleLikeClick} active={likeStatus === 'like'}>좋아요</ActionButton>
+              <ActionButton onClick={handleDislikeClick} active={likeStatus === 'dislike'}>싫어요</ActionButton>
+            </>
+          )}
+        </ButtonArea>
       </MainContent>
     </Container>
   );
 };
 
-export default EditPage;
+export default ReadPage;
 
 const Container = styled.div`
     background-color: #eff3f7;
@@ -177,8 +216,9 @@ const Sidebar = styled.div`
     background-color: #ffd700;
     padding: 20px;
     display: flex;
-    justify-content: center;
-    align-items: start;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
     border-radius: 0 10px 10px 0;
 `;
 
@@ -194,7 +234,31 @@ const HomeTextButton = styled.span`
     font-weight: bold;
     font-size: 16px;
     cursor: pointer;
+    margin: 40px 0 40px 0;
+
 `;
+
+const HeaderContainer = styled.div`
+    background-color: #fff;
+    padding: 20px;
+    flex-direction: row;
+    display: flex;
+    height: 50px;
+    margin-bottom: 30px;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px;
+`
+
+const Title = styled.span`
+    font-size: 24px;
+    font-weight: bold;
+`
+
+const SubText = styled.span`
+    font-size: 16px;
+    margin-left: 16px;
+`
 
 const ChatArea = styled.div`
     flex-grow: 1;
@@ -208,41 +272,46 @@ const ChatArea = styled.div`
     flex-direction: column;
 `;
 
-const InputArea = styled.div`
+const ButtonArea = styled.div`
     display: flex;
-    align-items: center;
-    padding: 10px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    margin-top: 10px;
 `;
 
-const MessageInput = styled.textarea`
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    resize: none;
-    font-size: 16px;
-    line-height: 1.5;
-    outline: none;
-    margin-right: 10px;
-
-    &:focus {
-        border-color: #ffd700;
-    }
-`;
-
-const SendButton = styled.button`
+const ActionButton = styled.button<{ active: boolean }>`
     padding: 10px 20px;
-    background-color: #ffd700;
+    background-color: ${({ active }) => (active ? '#ffcc00' : '#ffd700')};
     border: none;
     border-radius: 10px;
     cursor: pointer;
     font-weight: bold;
     font-size: 16px;
+    margin: 0 5px;
+    width: 50%;
+    height: 40px;
 
     &:hover {
         background-color: #ffcc00;
     }
+`;
+
+const ToggleButton = styled.button<{ active: boolean }>`
+    padding: 10px 20px;
+    background-color: ${({ active }) => (active ? '#ffcc00' : '#ffd700')};
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 10px;
+
+    &:hover {
+        background-color: #ffcc00;
+    }
+`;
+
+const EvaluatedText = styled.div`
+    font-size: 16px;
+    font-weight: bold;
+    color: #ff0000;
 `;

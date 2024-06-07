@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import ChatPage from './pages/ChatPage';
 import BooksPage from './pages/BooksPage';
 import EditPage from './pages/EditPage';
+import ReadPage from './pages/ReadPage';
 
 const routes: RouteObject[] = [
     {
@@ -35,7 +36,11 @@ const routes: RouteObject[] = [
     {
         path: "/edit/:storyId",
         element: <EditPage />
-    }
+    },
+    {
+        path: "/read/:storyId",
+        element: <ReadPage />
+    },
 ];
 
 const router = createBrowserRouter(routes);
