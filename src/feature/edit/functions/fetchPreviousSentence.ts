@@ -5,7 +5,6 @@ export const fetchPreviousSentence = async (storyId: number) => {
     console.log(storyId);
     const response = await client.get(`/make/${storyId}`);
     const data = response.data
-    console.log(data);
     return data;
   } catch (error) {
     console.error('이전 대화 불러오기 실패~~~~~~~~~' , error);

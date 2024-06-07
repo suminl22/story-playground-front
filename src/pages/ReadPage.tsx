@@ -23,7 +23,7 @@ const ReadPage: React.FC = () => {
   const [triggerFetchNext, setTriggerFetchNext] = useState<boolean>(false);
   const [isSentenceFetched, setIsSentenceFetched] = useState<boolean>(false);
   const [isFetchingNext, setIsFetchingNext] = useState<boolean>(false);
-  const [visibility, setVisibility] = useState<string>('PUBLIC');
+  const [visibility, setVisibility] = useState<string>('PRIVATE');
   const [bookData, setBookData] = useState<BookDetail>();
   const [likeStatus, setLikeStatus] = useState<string>('');
 
@@ -32,7 +32,7 @@ const ReadPage: React.FC = () => {
       const data = await fetchBookData(Number(storyId));
       if (data != null) {
         setBookData(data);
-        setVisibility(data.visibility);
+        setVisibility(data.visibility); // Set the visibility based on fetched data
       }
     };
 

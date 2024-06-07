@@ -66,8 +66,7 @@ const BookCover = styled.div`
     width: 180px;
     height: 220px;
     display: flex;
-    background: antiquewhite;
-    border: 1px solid black;
+    border: 2px solid black;
     border-radius: 8px;
     overflow: hidden;
     img {

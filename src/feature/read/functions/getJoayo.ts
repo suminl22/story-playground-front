@@ -9,7 +9,7 @@ export const getJoayo = async (storyId: number, likeStatus: string) => {
     } else {
       unlike0like1 = 0;
     }
-    await client.get(`evaluation/${storyId}/${unlike0like1}`);
+    await client.get(`/community/evaluation/${storyId}/${unlike0like1}`);
 
   } catch(error) {
     console.log('getJoayo 함수 실패!');
