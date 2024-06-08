@@ -50,14 +50,19 @@ const EditPage: React.FC = () => {
         setIsFetchingNext(true); // Start loading
         const nextSentence = await fetchNextSentence(Number(storyId), messages[messages.length - 1].content);
         if (nextSentence !== null) {
-          const systemMessage: message = { role: 'assistant', content: nextSentence };
+          const systemMessage: message = { role: 'assistant', content: nextSentence.content };
           setMessages((prevMessages) => {
             const updatedMessages = [...prevMessages, systemMessage];
-            scrollToBottom(); // Scroll to bottom when messages update
+            scrollToBottom();
             return updatedMessages;
           });
           setIsLoading(false);
-          setIsFetchingNext(false); // Stop loading
+          setIsFetchingNext(false);
+
+          if (nextSentence.isCompleted) {
+            alert('이야기가 종료되었습니다!');
+            navigate(`/read/${storyId}`, { replace: true });
+          }
         }
       }
     };

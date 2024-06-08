@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { fetchFirstSentence } from '../feature/chat/functions/fetchFirstSentence';
 import { fetchNextSentence } from '../feature/chat/functions/fetchNextSentence';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useResetRecoilState } from 'recoil';
 import { chatState } from '../recoil/chat/chat';
 import ChatBubble from '../shared/components/ChatBubble';
 import { message } from '../shared/types/message';
@@ -12,6 +12,7 @@ const ChatPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isComposing, setIsComposing] = useState<boolean>(false);
   const [messages, setMessages] = useRecoilState<message[]>(chatState);
+  const resetChatState = useResetRecoilState(chatState);
   const messagesRef = useRef<HTMLDivElement>(null);
   const isAtBottomRef = useRef<boolean>(true);
   const navigate = useNavigate();
@@ -36,9 +37,9 @@ const ChatPage: React.FC = () => {
     fetchData();
 
     return () => {
-      setMessages([]); // Clear messages on unmount
+      resetChatState(); // Clear messages on unmount
     };
-  }, []); // Removed setMessages from dependency array to ensure it runs only once
+  }, [resetChatState]); // Removed setMessages from dependency array to ensure it runs only once
 
   // Fetch the next sentence after the user sends a message
   useEffect(() => {
@@ -48,16 +49,21 @@ const ChatPage: React.FC = () => {
         setIsFetchingNext(true); // Start loading
         const nextSentence = await fetchNextSentence(storyId, messages[messages.length - 1].content);
         if (nextSentence !== null) {
-          const systemMessage: message = { role: 'assistant', content: nextSentence };
+          const systemMessage: message = { role: 'assistant', content: nextSentence.content };
           setMessages((prevMessages) => [...prevMessages, systemMessage]);
           setIsLoading(false);
           setIsFetchingNext(false); // Stop loading
+
+          if (nextSentence.isCompleted) {
+            alert('이야기가 종료되었습니다!');
+            navigate(`/read/${storyId}`, { replace: true });
+          }
         }
       }
     };
 
     fetchNext();
-  }, [triggerFetchNext, isComposing, storyId, messages, isFirstSentenceFetched]);
+  }, [triggerFetchNext, isComposing, storyId, messages, isFirstSentenceFetched, navigate]);
 
   // Scroll to the bottom of the chat area whenever messages change
   useEffect(() => {
@@ -121,7 +127,7 @@ const ChatPage: React.FC = () => {
 
   // Navigate back to home
   const handleClick = () => {
-    navigate('/home');
+    navigate('/home', { replace: true });
   };
 
   return (
