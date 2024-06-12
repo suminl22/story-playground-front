@@ -60,22 +60,22 @@ const EditPage: React.FC = () => {
           setIsFetchingNext(false);
 
           if (nextSentence.isCompleted) {
-            alert('이야기가 종료되었습니다!');
-            navigate(`/read/${storyId}`, { replace: true });
+            setTimeout(() => {
+              alert('이야기가 종료되었습니다!');
+              navigate(`/read/${storyId}`, { replace: true });
+            }, 5000);
           }
         }
       }
     };
 
     fetchNext();
-  }, [triggerFetchNext, isComposing, storyId, messages, isSentenceFetched, setMessages]);
+  }, [triggerFetchNext, isComposing, storyId, messages, isSentenceFetched, setMessages, navigate]);
 
-  // Scroll to the bottom of the chat area whenever messages change
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  // Handle scrolling in the chat area
   useEffect(() => {
     const handleScroll = () => {
       if (messagesRef.current) {
@@ -100,17 +100,14 @@ const EditPage: React.FC = () => {
     }
   };
 
-  // Handle composition start for IME
   const handleCompositionStart = () => {
     setIsComposing(true);
   };
 
-  // Handle composition end for IME
   const handleCompositionEnd = () => {
     setIsComposing(false);
   };
 
-  // Handle key press in the input area
   const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey && !isComposing) {
       event.preventDefault();
@@ -118,7 +115,6 @@ const EditPage: React.FC = () => {
     }
   };
 
-  // Send message and trigger fetch for the next sentence
   const sendMessage = () => {
     const input = document.getElementById('message-input') as HTMLTextAreaElement;
     const messageText = input.value.trim();
@@ -134,7 +130,6 @@ const EditPage: React.FC = () => {
     }
   };
 
-  // Navigate back to home
   const handleClick = () => {
     navigate('/home');
   };

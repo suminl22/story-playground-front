@@ -21,7 +21,6 @@ const ChatPage: React.FC = () => {
   const [isFirstSentenceFetched, setIsFirstSentenceFetched] = useState<boolean>(false);
   const [isFetchingNext, setIsFetchingNext] = useState<boolean>(false);
 
-  // Fetch the first sentence when the component mounts
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchFirstSentence();
@@ -37,11 +36,10 @@ const ChatPage: React.FC = () => {
     fetchData();
 
     return () => {
-      resetChatState(); // Clear messages on unmount
+      resetChatState();
     };
-  }, [resetChatState]); // Removed setMessages from dependency array to ensure it runs only once
+  }, [resetChatState]);
 
-  // Fetch the next sentence after the user sends a message
   useEffect(() => {
     const fetchNext = async () => {
       if (triggerFetchNext && !isComposing && isFirstSentenceFetched) {
@@ -52,11 +50,13 @@ const ChatPage: React.FC = () => {
           const systemMessage: message = { role: 'assistant', content: nextSentence.content };
           setMessages((prevMessages) => [...prevMessages, systemMessage]);
           setIsLoading(false);
-          setIsFetchingNext(false); // Stop loading
+          setIsFetchingNext(false);
 
           if (nextSentence.isCompleted) {
-            alert('이야기가 종료되었습니다!');
-            navigate(`/read/${storyId}`, { replace: true });
+            setTimeout(() => {
+              alert('이야기가 종료되었습니다!');
+              navigate(`/read/${storyId}`, { replace: true });
+            }, 5000);
           }
         }
       }
@@ -65,7 +65,6 @@ const ChatPage: React.FC = () => {
     fetchNext();
   }, [triggerFetchNext, isComposing, storyId, messages, isFirstSentenceFetched, navigate]);
 
-  // Scroll to the bottom of the chat area whenever messages change
   useEffect(() => {
     const scrollToBottom = () => {
       if (messagesRef.current && isAtBottomRef.current) {
@@ -76,7 +75,6 @@ const ChatPage: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Handle scrolling in the chat area
   useEffect(() => {
     const handleScroll = () => {
       if (messagesRef.current) {
@@ -95,17 +93,14 @@ const ChatPage: React.FC = () => {
     }
   }, []);
 
-  // Handle composition start for IME
   const handleCompositionStart = () => {
     setIsComposing(true);
   };
 
-  // Handle composition end for IME
   const handleCompositionEnd = () => {
     setIsComposing(false);
   };
 
-  // Handle key press in the input area
   const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey && !isComposing) {
       event.preventDefault();
@@ -113,7 +108,6 @@ const ChatPage: React.FC = () => {
     }
   };
 
-  // Send message and trigger fetch for the next sentence
   const sendMessage = () => {
     const input = document.getElementById('message-input') as HTMLTextAreaElement;
     const messageText = input.value.trim();
@@ -125,7 +119,6 @@ const ChatPage: React.FC = () => {
     }
   };
 
-  // Navigate back to home
   const handleClick = () => {
     navigate('/home', { replace: true });
   };
