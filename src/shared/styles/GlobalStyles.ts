@@ -22,12 +22,12 @@ const GlobalStyles = createGlobalStyle`
   //  font-style: normal;
   //}
   //
-  //@font-face {
-  //  font-family: 'Pretendard';
-  //  src: url('../../assets/fonts/Pretendard-Regular.ttf') format('truetype');
-  //  font-weight: 400;
-  //  font-style: normal;
-  //}
+  @font-face {
+    font-family: 'HakgyoansimKossuyeom';
+    src: url('../../assets/fonts/HakgyoansimKossuyeomR.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+  }
   //
   //@font-face {
   //  font-family: 'Pretendard';
@@ -67,9 +67,9 @@ const GlobalStyles = createGlobalStyle`
   html, body {
     height: 100%;
     margin: 0;
-    padding: 0;
+      padding: 0;
     background-color: #F9F9FC;
-    //font-family: 'Pretendard', sans-serif;
+    font-family: 'HakgyoansimKossuyeom', sans-serif;
   }
 `;
 
