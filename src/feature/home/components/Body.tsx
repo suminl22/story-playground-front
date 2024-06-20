@@ -52,7 +52,6 @@ const Body: React.FC = () => {
     );
   };
 
-
   return (
     <>
       <Container>
@@ -92,7 +91,7 @@ const Container = styled.div`
 const NavTabs = styled.ul`
     width: 100%;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-around;
     margin-bottom: 1rem;
     border-bottom: 2px solid #ddd;
 `;
@@ -104,15 +103,16 @@ const NavItem = styled.li`
 `;
 
 const NavButton = styled.button<{ active: boolean }>`
-    width: 100%; // 부모의 100% 차지
+    width: 100%;
     background-color: ${({ active }) => (active ? '#FCF06E' : 'white')};
     color: black;
     font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
     border: none;
-    border-bottom: ${({ active }) => (active ? '2px solid black' : 'none')};
     cursor: pointer;
     padding: 0.75rem 1.5rem;
     transition: background-color 0.3s, border-bottom 0.3s;
+    font-size: 1.4rem;
+    font-family: 'Hakgyoansim';
 
     &:focus {
         outline: none;
@@ -143,20 +143,25 @@ const BooksContainer = styled.div`
 `;
 
 const RowContainer = styled.div`
-    background-color: #E9ECEF;
     display: flex;
-    justify-content: space-evenly;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 50px;
     width: 100%;
-    margin: 10px;
+    margin: 10px 0;
     padding: 10px;
+    background-color: #E9ECEF;
     border-radius: 6px;
     box-sizing: border-box;
 `;
 
 const BookWrapper = styled.div`
+    width: 300px;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 10px;
     padding: 10px;
+    box-sizing: border-box;
 `;
+

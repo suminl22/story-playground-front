@@ -3,6 +3,7 @@ import Body from '../feature/home/components/Body';
 import NavBar from '../feature/home/components/NavBar';
 import RankingContent from '../feature/home/components/RankingContent';
 import CreateContent from '../feature/home/components/CreateContent';
+import styled from '@emotion/styled';
 
 const HomePage: React.FC = () => {
   return (

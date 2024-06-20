@@ -24,7 +24,7 @@ const RankingContent: React.FC = () => {
 
   return (
     <Container>
-      <Title>명예의 전당</Title>
+      <Title>🎉명예의 전당🎉</Title>
       <BookList>
         {books.map((book) => (
           <Book key={book.id} state="done" content={book} storyId={book.id}/>
@@ -40,7 +40,7 @@ const RankingContent: React.FC = () => {
 export default RankingContent;
 
 const Container = styled.div`
-    padding: 20px 0 !important;
+    padding: 5px 0 10px 0 !important;
     background-color: #FCF06E;
     text-align: center;
     @media (min-width: 992px) {
@@ -50,7 +50,7 @@ const Container = styled.div`
 `;
 
 const Title = styled.h1`
-    font-size: 2.5rem;
+    font-size: 3rem;
     font-weight: bolder;
     color: black;
 `;
@@ -65,7 +65,7 @@ const BookList = styled.div`
 const Button = styled.button`
     background-color: #FFD700;
     width: 300px;
-    
+    margin: 10px 0 10px 0;
     border: none;
     color: black;
     font-weight: bold;
@@ -75,7 +75,8 @@ const Button = styled.button`
     text-decoration: none;
     display: inline-block;
     padding: 0.8rem 1.4rem;
-    font-size: 1.25rem;
+    font-size: 1.6rem;
+    font-family: 'Hakgyoansim';
     cursor: pointer;
     &:hover {
       transform: scale(1.05);

@@ -91,7 +91,8 @@ const Button = styled.button`
     font-weight: bold;
     border: none;
     border-radius: 5px;
-    font-size: 16px;
+    font-size: 1.4rem;
+    font-family: 'Hakgyoansim';
     cursor: pointer;
 
     &:hover {

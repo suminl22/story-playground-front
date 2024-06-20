@@ -43,7 +43,7 @@ const Container = styled.div`
 `;
 
 const SubTitle = styled.span`
-    font-size: 1.2rem;
+    font-size: 1.6rem;
 `
 
 const Column = styled.div`
@@ -62,7 +62,8 @@ const StartButton = styled.button`
     text-decoration: none;
     display: inline-block;
     padding: 0.8rem 1.4rem;
-    font-size: 1.25rem;
+    font-size: 1.6rem;
+    font-family: 'Hakgyoansim';
     cursor: pointer;
     &:hover {
         transform: scale(1.05);

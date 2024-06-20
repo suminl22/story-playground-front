@@ -174,9 +174,9 @@ const ReadPage: React.FC = () => {
         <HeaderContainer>
           <Title>{bookData?.title}</Title>
           <>
+            <SubText>교훈 : {bookData?.category}</SubText>
             <SubText>작가 : {bookData?.author}</SubText>
             <SubText>작성날짜 : {bookData?.modifiedDate}</SubText>
-            <SubText>교훈 : {bookData?.category}</SubText>
           </>
         </HeaderContainer>
         <ChatArea ref={messagesRef}>
@@ -232,10 +232,9 @@ const MainContent = styled.div`
 const HomeTextButton = styled.span`
     color: black;
     font-weight: bold;
-    font-size: 16px;
     cursor: pointer;
     margin: 40px 0 40px 0;
-
+    font-size: 1.6rem;
 `;
 
 const HeaderContainer = styled.div`
@@ -251,12 +250,12 @@ const HeaderContainer = styled.div`
 `
 
 const Title = styled.span`
-    font-size: 24px;
+    font-size: 1.8rem;
     font-weight: bold;
 `
 
 const SubText = styled.span`
-    font-size: 16px;
+    font-size: 1.4rem;
     margin-left: 16px;
 `
 
@@ -285,10 +284,11 @@ const ActionButton = styled.button<{ active: boolean }>`
     border-radius: 10px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 16px;
     margin: 0 5px;
     width: 50%;
-    height: 40px;
+    height: 50px;
+    font-size: 1.6rem;
+    font-family: 'Hakgyoansim';
 
     &:hover {
         background-color: #ffcc00;
@@ -302,7 +302,8 @@ const ToggleButton = styled.button<{ active: boolean }>`
     border-radius: 10px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 1.6rem;
+    font-family: 'Hakgyoansim';
     margin-bottom: 10px;
 
     &:hover {
@@ -311,7 +312,8 @@ const ToggleButton = styled.button<{ active: boolean }>`
 `;
 
 const EvaluatedText = styled.div`
-    font-size: 16px;
+    font-size: 1.6rem;
+    font-family: 'Hakgyoansim';
     font-weight: bold;
     color: #ff0000;
 `;
