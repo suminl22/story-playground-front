@@ -39,7 +39,7 @@ const SignUpForm:React.FC = () => {
             type="text"
             value={username}
             onChange={handleUsernameChange}
-            placeholder="사용자 아이디"
+            placeholder="아이디 입력"
           />
         </InputWrapper>
         <InputWrapper>
@@ -47,7 +47,7 @@ const SignUpForm:React.FC = () => {
             type="password"
             value={password}
             onChange={handlePasswordChange}
-            placeholder="비밀번호"
+            placeholder="비밀번호 입력"
           />
         </InputWrapper>
         {error && <ErrorMessage>{error}</ErrorMessage>}

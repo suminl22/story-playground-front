@@ -37,13 +37,13 @@ const LoginForm:React.FC = ()=>{
             type="text"
             value={username}
             onChange={handleUsernameChange}
-            placeholder="사용자 아이디"
+            placeholder="아이디 입력"
           />
           <Input
             type="password"
             value={password}
             onChange={handlePasswordChange}
-            placeholder="비밀번호"
+            placeholder="비밀번호 입력"
           />
         {error && <ErrorMessage>{error}</ErrorMessage>}
         <Button type="submit">로그인</Button>
@@ -57,33 +57,36 @@ const Container = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 300px;
+    width: 80%;
     height: fit-content;
-    background-color: white;
     padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
 `
 
 const Input = styled.input`
-    width: 250px;
+    width: 95%;
     height: 40px;
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 0 10px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    transition: border-color 0.3s;
+
+    &:focus {
+        border-color: #FFD700;
+        outline: none;
+    }
 `;
 
 const Button = styled.button`
     width: 100%;
     height: 40px;
     background-color: #FFD700;
-    color: black;
     font-weight: bold;
     border: none;
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
+    color: black;
 
     &:hover {
         background-color: #FCF06E;
