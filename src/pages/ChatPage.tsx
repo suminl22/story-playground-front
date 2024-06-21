@@ -181,7 +181,7 @@ const MainContent = styled.div`
 const HomeTextButton = styled.span`
     color: black;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 1.6rem;
     cursor: pointer;
 `;
 
