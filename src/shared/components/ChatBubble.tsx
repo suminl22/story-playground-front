@@ -26,4 +26,5 @@ const Bubble = styled.div<{ role: 'user' | 'assistant' }>`
     align-self: ${({ role }) => (role === 'user' ? 'flex-end' : 'flex-start')};
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     word-break: break-word;
+    font-size: 1.4rem;
 `;

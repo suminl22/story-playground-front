@@ -29,15 +29,15 @@ const Book: React.FC<BookProps> = ({ state, content, storyId }) => {
       <Title>{content.title}</Title>
       {state === "done" ? (
         <>
-          <Date>{(content as CompletedBook).createdAt}</Date>
-          {'author' in content && <Author>작가 : {(content as PublicBook).author}</Author>}
           {'category' in content && <Category>주제 : {(content as PublicBook).category}</Category>}
+          {'author' in content && <Author>작가 : {(content as PublicBook).author}</Author>}
           {'likeNum' in content && (
             <Row>
-              <Number>좋아요 : {(content as PublicBook).likeNum}개</Number>
-              <Number>싫어요 : {(content as PublicBook).dislikeNum}개</Number>
+              <Number>👍 : {(content as PublicBook).likeNum}개</Number>
+              <Number>👎 : {(content as PublicBook).dislikeNum}개</Number>
             </Row>
           )}
+          <Date>{(content as CompletedBook).createdAt}</Date>
         </>
       ) : (
         <Date>{(content as IncompletedBook).modifiedDate}</Date>
@@ -52,7 +52,7 @@ const Container = styled.div`
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    max-width: 100vw;
+    max-width: 300px;
     max-height: 100vh;
     overflow: hidden;
     border-radius: 10px;
@@ -63,11 +63,9 @@ const Container = styled.div`
 `;
 
 const BookCover = styled.div`
-    width: 180px;
-    height: 220px;
+    width: 170px;
+    height: 210px;
     display: flex;
-    border: 2px solid black;
-    border-radius: 8px;
     overflow: hidden;
     img {
         width: 100%;
@@ -77,26 +75,26 @@ const BookCover = styled.div`
 `;
 
 const Title = styled.span`
-    margin-top: 10px;
-    font-size: 22px;
+    margin-top: 14px;
+    font-size: 1.6rem;
     font-weight: bolder;
 `;
 
 const Date = styled.span`
-    margin-top: 5px;
-    font-size: 0.9rem;
+    margin-top: 10px;
+    font-size: 1rem;
     color: #666;
 `;
 
 const Author = styled.span`
     margin-top: 5px;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     color: #333;
 `;
 
 const Category = styled.span`
     margin-top: 5px;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     color: #333;
 `;
 
@@ -108,7 +106,7 @@ const Row = styled.div`
 
 const Number = styled.span`
     margin-top: 5px;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     color: #333;
 `;
 

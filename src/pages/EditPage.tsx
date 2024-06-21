@@ -165,84 +165,85 @@ const EditPage: React.FC = () => {
 export default EditPage;
 
 const Container = styled.div`
-    background-color: #eff3f7;
-    display: flex;
-    height: 100vh;
-    border-radius: 5px;
+  background-color: #eff3f7;
+  display: flex;
+  height: 100vh;
+  border-radius: 5px;
 `;
 
 const Sidebar = styled.div`
-    height: 100vh;
-    width: 15%;
-    background-color: #ffd700;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: start;
-    border-radius: 0 10px 10px 0;
+  height: 95vh;
+  width: 15%;
+  background-color: #ffd700;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  border-radius: 0 10px 10px 0;
 `;
 
 const MainContent = styled.div`
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
 `;
 
 const HomeTextButton = styled.span`
-    color: black;
-    font-weight: bold;
-    font-size: 16px;
-    cursor: pointer;
+  margin-top: 10px;
+  color: black;
+  font-weight: bold;
+  font-size: 1.6rem;
+  cursor: pointer;
 `;
 
 const ChatArea = styled.div`
-    flex-grow: 1;
-    overflow-y: auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 10px;
-    display: flex;
-    flex-direction: column;
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const InputArea = styled.div`
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 `;
 
 const MessageInput = styled.textarea`
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    resize: none;
-    font-size: 16px;
-    line-height: 1.5;
-    outline: none;
-    margin-right: 10px;
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  resize: none;
+  font-size: 16px;
+  line-height: 1.5;
+  outline: none;
+  margin-right: 10px;
 
-    &:focus {
-        border-color: #ffd700;
-    }
+  &:focus {
+    border-color: #ffd700;
+  }
 `;
 
 const SendButton = styled.button`
-    padding: 10px 20px;
-    background-color: #ffd700;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 16px;
+  padding: 10px 20px;
+  background-color: #ffd700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
 
-    &:hover {
-        background-color: #ffcc00;
-    }
+  &:hover {
+    background-color: #ffcc00;
+  }
 `;

@@ -12,9 +12,13 @@ const NavBar: React.FC = () => {
     navigate('/');
   };
 
+  const easterEgg = () => {
+    alert('안녕! 나는 야기! 영어 이름은 YAGI~ 나는 너와 함께 이야기를 만들어나가는게 세상에서 제일 재밌고 신나ㅎㅎ 여기 이야기 놀이터에서 너의 상상력을 마음껏 펼쳐봐:)')
+  }
+
   return (
     <Nav>
-      <Logo src={logoTextImg} alt='이야기 놀이터 이미지' />
+      <Logo src={logoTextImg} alt='이야기 놀이터 이미지' onClick={easterEgg}/>
       <LogoutButton onClick={onClick}>
         Logout
       </LogoutButton>
@@ -29,7 +33,7 @@ const Nav = styled.nav`
     justify-content: space-between;
     align-items: center;
     background-color: #f8f9fa;
-    padding: 16px 20px 16px 20px;
+    padding: 16px 24px 16px 24px;
 `;
 
 const Logo = styled.img`

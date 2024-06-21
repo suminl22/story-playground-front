@@ -36,13 +36,7 @@ const BooksPage: React.FC = () => {
     getBooks();
 
     return () => setBooks([]);
-  }, [activeCategory, activeFilter]); // Fetch books whenever activeCategory or activeFilter changes
-
-  // 책들을 3개씩 RowContainer에 배치
-  const rows = [];
-  for (let i = 0; i < books.length; i += 3) {
-    rows.push(books.slice(i, i + 3));
-  }
+  }, [activeCategory, activeFilter]);
 
   return (
     <PageContainer>
@@ -53,7 +47,7 @@ const BooksPage: React.FC = () => {
             isActive={category === activeCategory}
             onClick={() => {
               setActiveCategory(category);
-              setActiveFilter('좋아요순'); // Reset filter to 좋아요순 when category changes
+              setActiveFilter('좋아요순')
             }}
           >
             {category}
@@ -75,14 +69,10 @@ const BooksPage: React.FC = () => {
         </FilterButton>
       </FilterBar>
       <BooksContainer>
-        {rows.map((row, rowIndex) => (
-          <RowContainer key={rowIndex}>
-            {row.map((book) => (
-              <BookWrapper key={book.id}>
-                <Book state="done" content={book} storyId={book.id} />
-              </BookWrapper>
-            ))}
-          </RowContainer>
+        {books.map((book) => (
+          <BookWrapper key={book.id}>
+            <Book state="done" content={book} storyId={book.id} />
+          </BookWrapper>
         ))}
       </BooksContainer>
     </PageContainer>
@@ -105,6 +95,12 @@ const NavBar = styled.nav`
     justify-content: start;
     align-items: center;
     padding: 20px;
+    overflow-x: auto;
+    white-space: nowrap;
+
+    @media (max-width: 768px) {
+        padding: 10px;
+    }
 `;
 
 const NavButton = styled.button<{ isActive: boolean }>`
@@ -112,15 +108,23 @@ const NavButton = styled.button<{ isActive: boolean }>`
     border: none;
     color: ${({ isActive }) => (isActive ? 'black' : '#666')};
     font-weight: bold;
-    font-size: 16px;
+    font-family: 'Hakgyoansim';
+    font-size: 1.4rem;
     margin: 0 10px;
     padding: 10px 20px;
     cursor: pointer;
     border-radius: 5px;
+    white-space: nowrap;
 
     &:hover {
         background-color: #ffcc00;
         color: black;
+    }
+
+    @media (max-width: 768px) {
+        font-size: 1.2rem;
+        padding: 5px 10px;
+        margin: 0 5px;
     }
 `;
 
@@ -128,8 +132,11 @@ const FilterBar = styled.div`
     display: flex;
     justify-content: flex-end;
     width: 100%;
-    margin-bottom: 20px;
-    padding: 0 20px;
+    margin: 20px 40px 10px 0;
+
+    @media (max-width: 768px) {
+        margin: 10px 20px 10px 0;
+    }
 `;
 
 const FilterButton = styled.button<{ isSelected: boolean }>`
@@ -137,38 +144,33 @@ const FilterButton = styled.button<{ isSelected: boolean }>`
     border: none;
     color: ${({ isSelected }) => (isSelected ? 'black' : '#666')};
     font-weight: ${({ isSelected }) => (isSelected ? 'bold' : 'normal')};
-    font-size: 16px;
+    text-decoration: ${({ isSelected }) => (isSelected ? 'underline' : 'none')};
+    font-family: 'Hakgyoansim';
+    font-size: 1.4rem;
     margin-left: 20px;
     cursor: pointer;
 
     &:hover {
         text-decoration: underline;
     }
+
+    @media (max-width: 768px) {
+        font-size: 1.2rem;
+        margin-left: 10px;
+    }
 `;
 
 const BooksContainer = styled.div`
     display: flex;
-    flex-direction: column;
-    gap: 20px;
+    flex-wrap: wrap;
+    gap: 50px;
     width: 100%;
-    align-items: center;
-`;
-
-const RowContainer = styled.div`
-    background-color: #e9ecef;
-    display: flex;
-    justify-content: space-evenly;
-    width: 100%;
-    margin: 10px;
-    padding: 10px;
-    border-radius: 6px;
-    box-sizing: border-box;
+    justify-content: center;
 `;
 
 const BookWrapper = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
+    flex: 1 1 300px;
+    max-width: 300px;
+    box-sizing: border-box;
     padding: 10px;
 `;
