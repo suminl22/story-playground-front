@@ -51,20 +51,27 @@ const EditPage: React.FC = () => {
         const nextSentence = await fetchNextSentence(Number(storyId), messages[messages.length - 1].content);
         if (nextSentence !== null) {
           const systemMessage: message = { role: 'assistant', content: nextSentence.content };
-          setMessages((prevMessages) => {
-            const updatedMessages = [...prevMessages, systemMessage];
-            scrollToBottom();
-            return updatedMessages;
-          });
-          setIsLoading(false);
-          setIsFetchingNext(false);
 
-          if (nextSentence.isCompleted) {
-            setTimeout(() => {
-              alert('이야기가 종료되었습니다!');
-              navigate(`/read/${storyId}`, { replace: true });
-            }, 5000);
+          if (systemMessage.content === '{[ReJeCTed!]}') {
+            // Remove the latest user message
+            setMessages((prevMessages) => prevMessages.slice(0, -1));
+            // Stop fetching next sentence
+            setIsFetchingNext(false);
+            // Alert the user
+            alert('사용자의 입력에서 부적절한 내용이 발견되었습니다!! \n바르고 고운 말로 다시 입력해주세요:)');
+          } else {
+            setMessages((prevMessages) => [...prevMessages, systemMessage]);
+            setIsLoading(false);
+            setIsFetchingNext(false);
+
+            if (nextSentence.isCompleted) {
+              setTimeout(() => {
+                alert('이야기가 종료되었습니다!');
+                navigate(`/read/${storyId}`, { replace: true });
+              }, 3000);
+            }
           }
+
         }
       }
     };
